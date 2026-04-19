@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                box-sizing: border-box;
+             }
+
+            .container {
+                padding: 10px;
+                border: 2px dashed #ff6b6b;
+                background: #fff5f5;
+                margin-bottom: 16px;
+                width: 500px;
+                height: 500px;
+                position: relative;
+            }
+            .content {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+            }
+
+            .square {
+                width: 100px;
+                height: 100px;
+                background: #ff6b6b;
+                margin: 16px;
+            }
+
+            /* ====== 横轴 ====== */
+            .main-axios {
+                width: 100%;
+                height: 2px;
+                background: black;
+                position: absolute;
+                top: 105%;
+                left: 0;
+                text-align: center;
+            }
+
+            /* 横轴右端箭头（朝右 →） */
+            .main-axios::before {
+                content: "";
+                position: absolute;
+                right: -1px;
+                top: 50%;
+                left: 0;
+                transform: translateY(-50%) translateX(-50%);
+                width: 0;
+                height: 0;
+                border-top: 6px solid transparent;
+                border-bottom: 6px solid transparent;
+                border-right: 10px solid black;
+            }
+
+            .cross-axios {
+                width: 2px;
+                height: 100%;
+                background: black;
+                position: absolute;
+                top: 0;
+                right: 105%;
+                writing-mode: vertical-rl;
+                text-align: center;
+            }
+
+            .cross-axios::after {
+                content: "";
+                position: absolute;
+                top: -1px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 0;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-bottom: 10px solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2 style="padding-left: 20px;">Flex容器</h2>
+        
+            <div class="content">
+                <div class="square"></div>
+            </div>
+            <div class="main-axios">
+                <p class="main-axios-label">
+                    主轴
+                </p>
+            </div>
+            <div class="cross-axios">
+                <p class="cross-axios-label">
+                    交叉轴
+                </p>
+            </div>
+        </div>
+    </body>
+</html>

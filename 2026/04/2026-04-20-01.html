@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 400px;
+                perspective: 800px;
+            }
+
+            .container_inner {
+                width: 250px;
+                height: 250px;
+                position: relative;
+                transform-style: preserve-3d;
+                transition: transform 0.8s ease;
+            }
+
+            .container_inner.flipped {
+                transform: rotateY(180deg);
+            }
+
+            .front,
+            .back {
+                border-radius: 10px;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                backface-visibility: hidden;
+            }
+
+            .front {
+                background-color: rebeccapurple;
+            }
+
+            .back {
+                background-color: greenyellow;
+                transform: rotateY(180deg);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="container_inner">
+                <div class="front">1</div>
+                <div class="back">2</div>
+            </div>
+        </div>
+
+        <script>
+            const card = document.querySelector(".container_inner");
+            let isAnimating = false;
+            let isCardBack = false;
+            let mouseInCard = false;
+
+            
+            function updateStatus() {     
+                if (mouseInCard && !isCardBack) {
+                    flipCard();
+                } else if (!mouseInCard && isCardBack) {
+                    flipCard();
+                }
+            }
+            
+            function flipCard() {
+                if (isAnimating) return;
+            
+                isAnimating = true;
+                isCardBack = !isCardBack;
+                card.classList.toggle("flipped");
+            }
+            
+            card.addEventListener("mouseenter", () => {
+                mouseInCard = true;
+                updateStatus();
+            });
+
+            card.addEventListener("mouseleave", () => {
+                mouseInCard = false;
+                updateStatus();
+            });
+
+            card.addEventListener("transitionend", (e) => {
+                if (e.target !== card || e.propertyName !== "transform") return;         
+            
+                isAnimating = false;
+                updateStatus();
+            });
+        </script>
+    </body>
+</html>

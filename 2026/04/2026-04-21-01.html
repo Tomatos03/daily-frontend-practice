@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            body {
+                padding: 0;
+                margin: 0;
+                background-color: antiquewhite;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                min-width: 400px;
+            }
+            form {
+                width: 400px;
+                height: 500px;
+                background-color: white;
+                border-radius: 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+            h1 {
+                margin: 0 auto;
+                font-size: 24px;
+            }
+            .progress {
+                position: relative;
+                margin-bottom: 50px;
+            }
+
+            .circle {
+                width: 40px;
+                height: 40px;
+                background-color: white;
+                border-radius: 50%;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%) translateX(-50%);
+                border: 6px solid rebeccapurple;
+                font-weight: bold;
+                line-height: 40px;
+                text-align: center;
+            }
+            .bar,
+            .bar-active {
+                background-color: white;
+                height: 6px;
+                position: absolute;
+                top: 50%;
+                width: 100%;
+                transform: translateY(-50%);
+            }
+
+            .bar-active {
+                background-color: rebeccapurple;
+                transition: width 0.5s ease;
+                width: 0;
+            }
+
+            .step {
+                display: none;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .step.active {
+                display: flex;
+            }
+
+            .actions {
+                margin-top: auto;
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            button {
+                border: none;
+                border-radius: 8px;
+                padding: 8px 14px;
+                background-color: rebeccapurple;
+                color: white;
+                cursor: pointer;
+            }
+
+            button[disabled] {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="progress">
+            <div class="bar"></div>
+            <div class="bar-active"></div>
+        </div>
+
+        <form action="#" method="post" id="multiStepForm">
+            <div class="step active" data-step="1">
+                <h1>Step 1: User Information</h1>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required />
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required />
+            </div>
+
+            <div class="step" data-step="2">
+                <h1>Step 2: Contact Info</h1>
+                <label for="phone">Phone:</label>
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="输入手机号"
+                    required />
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required />
+            </div>
+
+            <div class="step" data-step="3">
+                <h1>Step 3: Account Security</h1>
+                <label for="password">Password:</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    minlength="6"
+                    required />
+                <label for="confirmPassword">Confirm Password:</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    minlength="6"
+                    required />
+            </div>
+
+            <div class="step" data-step="4">
+                <h1>Step 4: Preferences</h1>
+                <label for="role">Role:</label>
+                <select id="role" name="role" required>
+                    <option value="">请选择</option>
+                    <option value="student">Student</option>
+                    <option value="developer">Developer</option>
+                    <option value="designer">Designer</option>
+                </select>
+                <label for="bio">Bio:</label>
+                <textarea
+                    id="bio"
+                    name="bio"
+                    rows="4"
+                    placeholder="简单介绍你自己"></textarea>
+            </div>
+
+            <div class="step" data-step="5">
+                <h1>Step 5: Confirm</h1>
+                <label>
+                    <input
+                        type="checkbox"
+                        id="agreement"
+                        name="agreement"
+                        required />
+                    我已阅读并同意相关条款
+                </label>
+                <p>点击提交完成示例流程。</p>
+            </div>
+
+            <div class="actions">
+                <button type="button" id="prevBtn">上一步</button>
+                <button type="button" id="nextBtn">下一步</button>
+                <button type="submit" id="submitBtn" hidden>提交</button>
+            </div>
+        </form>
+    </body>
+
+    <script>
+        const container = document.getElementsByClassName("progress")[0];
+        const steps = Array.from(document.getElementsByClassName("step"));
+        const STEP_NUM = 5;
+        const MID_GAP = 100;
+        let currentStep = 1;
+        const form = document.getElementById("multiStepForm");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const submitBtn = document.getElementById("submitBtn");
+
+        initProgressWidth((STEP_NUM - 1) * MID_GAP);
+        for (let i = 0; i < STEP_NUM; i++) {
+            createCircle(i + 1, i);
+        }
+        renderStep();
+
+        function createCircle(innerText, i) {
+            const newDiv = document.createElement("div");
+            newDiv.innerText = innerText;
+            newDiv.className = "circle";
+            newDiv.style.left = (i * 100) / (STEP_NUM - 1) + "%";
+            container.appendChild(newDiv);
+        }
+
+        function initProgressWidth(width) {
+            container.style.width = width + "px";
+        }
+
+        function updateProgress(step) {
+            if (step < 1 || step > STEP_NUM) {
+                return;
+            }
+
+            currentStep = step;
+
+            const barActive = document.getElementsByClassName("bar-active")[0];
+            barActive.style.width = (step - 1) * MID_GAP + "px";
+
+            const circles = Array.from(
+                document.getElementsByClassName("circle"),
+            );
+            circles.forEach((circle, index) => {
+                circle.style.borderColor =
+                    index + 1 <= step ? "rebeccapurple" : "#d7d7d7";
+            });
+        }
+
+        function renderStep() {
+            steps.forEach((stepEl, index) => {
+                stepEl.classList.toggle("active", index + 1 === currentStep);
+            });
+
+            updateProgress(currentStep);
+            prevBtn.disabled = currentStep === 1;
+            nextBtn.hidden = currentStep === STEP_NUM;
+            submitBtn.hidden = currentStep !== STEP_NUM;
+        }
+
+        function validateCurrentStep() {
+            const currentStepElement = steps[currentStep - 1];
+            const fields = currentStepElement.querySelectorAll(
+                "input, select, textarea",
+            );
+
+            for (const field of fields) {
+                if (!field.checkValidity()) {
+                    field.reportValidity();
+                    return false;
+                }
+            }
+
+            if (currentStep === 3) {
+                const pass = document.getElementById("password").value;
+                const confirmPass = document.getElementById("confirmPassword");
+                if (pass !== confirmPass.value) {
+                    confirmPass.setCustomValidity("两次密码不一致");
+                    confirmPass.reportValidity();
+                    return false;
+                }
+                confirmPass.setCustomValidity("");
+            }
+
+            return true;
+        }
+
+        prevBtn.addEventListener("click", () => {
+            if (currentStep > 1) {
+                currentStep -= 1;
+                renderStep();
+            }
+        });
+
+        nextBtn.addEventListener("click", () => {
+            if (!validateCurrentStep()) {
+                return;
+            }
+            if (currentStep < STEP_NUM) {
+                currentStep += 1;
+                renderStep();
+            }
+        });
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            if (!validateCurrentStep()) {
+                return;
+            }
+            alert("示例表单提交成功");
+        });
+    </script>
+</html>

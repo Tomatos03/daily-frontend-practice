@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                height: 200vh;
+            }
+            .nav {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                height: 60px;
+                gap: 50px;
+                background-color: rgba(0, 0, 0, 0.2);
+                position: sticky;
+                top: 0;
+            }
+            .options::after {
+                content: "";
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-top: 10px solid rgba(0, 0, 0, 0.7);
+                margin-left: 10px;
+            }
+
+            .options {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                height: 100%;
+            }
+
+            .option {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                padding: 10px;
+            }
+
+            .display-options {
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.2s ease;
+                position: absolute;
+                top: 100%;
+                flex-direction: column;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .display-options .option:hover {
+                background-color: rgba(255, 255, 255, 0.5);
+            }
+
+            .options:hover .display-options {
+                display: flex;
+                opacity: 1;
+                visibility: visible;
+            }
+            .logo {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: auto;
+                margin-left: 50px;
+                background-color: rgba(255, 255, 255, 0.5);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="nav">
+            <img
+                class="logo"
+                src="https://api.dicebear.com/7.x/avataaars/svg" />
+            <div class="option">Home</div>
+            <div class="option">About</div>
+            <div class="options">
+                <div class="option">Products</div>
+                <div class="display-options">
+                    <div class="option">Content1</div>
+                    <div class="option">Content2</div>
+                    <div class="option">Content3</div>
+                </div>
+            </div>
+            <div class="option">Services</div>
+        </div>
+    </body>
+</html>

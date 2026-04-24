@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            body {
+                min-height: 100vh;
+                padding: 0;
+                margin: 0;
+                background-color: #0a0e17;
+            }
+
+            :root {
+                --bg: #0a0e17;
+                --surface: #111827;
+                --border: rgba(255, 255, 255, 0.06);
+                --text-primary: #f0f0f0;
+                --text-muted: #5a6275;
+                --track: #1e2738;
+                --green: #34d399;
+                --blue: #60a5fa;
+                --amber: #fbbf24;
+                --rose: #fb7185;
+                --violet: #a78bfa;
+                --cyan: #22d3ee;
+                --ring-size: 120px;
+                --stroke-width: 8;
+                --circur-radius: 54;
+                --circumference: 339.292; /* 由圆的周长(2 * PI * r)计算而来 */
+            }
+
+            .header {
+                text-transform: uppercase;
+                text-align: center;
+                background: linear-gradient(135deg, blue, violet);
+                background-clip: text;
+                color: transparent;
+                letter-spacing: 0.5rem;
+            }
+            .container {
+                display: grid;
+                max-width: 720px;
+                margin: 0 auto;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+            }
+
+            .card {
+                background-color: #111827;
+                border: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            @media (max-width: 600px) {
+                .container {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            @media (max-width: 380px) {
+                .container {
+                    grid-template-columns: 1fr;
+                }
+            }
+            .progress-bar {
+                width: 200px;
+                height: 20px;
+                background: #eee;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .progress {
+                height: 100%;
+                background: #af4c4c;
+                transition: width 0.3s;
+            }
+
+            .card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 28px 16px 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 16px;
+                opacity: 0;
+                animation: cardIn 0.5s ease forwards;
+                transition:
+                    border-color 0.3s ease,
+                    box-shadow 0.3s ease;
+            }
+
+            .card:hover {
+                border-color: rgba(255, 255, 255, 0.12);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Staggered entry */
+            .card:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+            .card:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .card:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+            .card:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+            .card:nth-child(5) {
+                animation-delay: 0.5s;
+            }
+            .card:nth-child(6) {
+                animation-delay: 0.6s;
+            }
+
+            @keyframes cardIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(24px) scale(0.96);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            .ring {
+                height: var(--stroke-width);
+                width: var(--stroke-width);
+                position: relative;
+            }
+
+            .ring svg {
+                width: 100%;
+                height: 100%;
+                /* SVG 绘制圆默认从3点钟方向开始绘制 */
+                transform: rotate(-90deg);
+            }
+
+            .ring--high .ring__progress {
+                stroke: var(--green);
+            }
+            .ring--mid .ring__progress {
+                stroke: var(--blue);
+            }
+            .ring--low .ring__progress {
+                stroke: var(--amber);
+            }
+            .ring--crit .ring__progress {
+                stroke: var(--rose);
+            }
+
+            .skill-name {
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--text-muted);
+                letter-spacing: 0.08em;
+            }
+
+            .ring__value {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: "Space Mono", monospace;
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--text-primary);
+            }
+
+            .ring__value::after {
+                content: "%";
+                font-size: 18px;
+                font-weight: 400;
+                color: var(--text-muted);
+                margin-left: 1px;
+                margin-top: 2px;
+            }
+
+            .ring__progress {
+                fill: none;
+                stroke-width: var(--stroke-width);
+                stroke-linecap: round;
+                stroke-dasharray: var(--circumference);
+                stroke-dashoffset: calc(
+                    var(--circumference) * (1 - var(--progress) / 100) /* 偏移长度为圆周的 100% - 进度 */
+                );
+                transition: stroke 0.3s ease;
+                animation: fillRing 1.5s ease-out forwards;
+                animation-delay: inherit; /* inherit from card */
+            }
+
+            /* 
+               @property 是 CSS Houdini API 的一部分，用于显式定义变量类型。
+               如果不定义，浏览器会将 --progress 视为普通字符串，无法对其进行数值插值（即无法实现平滑动画）。
+               这里定义为 <number>，使浏览器能够计算 0 到 var(--percent) 之间的每一帧数值。
+            */
+            @property --progress {
+                /** 固定写法 **/
+                syntax: "<number>";
+                initial-value: 0;
+                inherits: false;
+            }
+
+            @keyframes fillRing {
+                from {
+                    --progress: 0;
+                }
+                to {
+                    --progress: var(--percent);
+                }
+            }
+
+            .ring__track {
+                fill: none;
+                stroke: var(--track);
+                stroke-width: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 class="header">skill dashboard</h1>
+
+        <div class="container">
+            <div class="card">
+                <div class="ring ring--high" style="--percent: 94">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="ring__track" cx="60" cy="60" r="54" />
+                        <circle class="ring__progress" cx="60" cy="60" r="54" />
+                    </svg>
+                    <div class="ring__value">94</div>
+                </div>
+                <div class="skill-name">JavaScript</div>
+            </div>
+
+            <div class="card">
+                <div class="ring ring--mid" style="--percent: 63">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="ring__track" cx="60" cy="60" r="54" />
+                        <circle class="ring__progress" cx="60" cy="60" r="54" />
+                    </svg>
+                    <div class="ring__value">63</div>
+                </div>
+                <div class="skill-name">CSS</div>
+            </div>
+
+            <div class="card">
+                <div class="ring ring--high" style="--percent: 81">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="ring__track" cx="60" cy="60" r="54" />
+                        <circle class="ring__progress" cx="60" cy="60" r="54" />
+                    </svg>
+                    <div class="ring__value">81</div>
+                </div>
+                <div class="skill-name">HTML</div>
+            </div>
+
+            <div class="card">
+                <div class="ring ring--low" style="--percent: 39">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="ring__track" cx="60" cy="60" r="54" />
+                        <circle class="ring__progress" cx="60" cy="60" r="54" />
+                    </svg>
+                    <div class="ring__value">39</div>
+                </div>
+                <div class="skill-name">Vue</div>
+            </div>
+
+            <div class="card">
+                <div class="ring ring--crit" style="--percent: 17">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="ring__track" cx="60" cy="60" r="54" />
+                        <circle class="ring__progress" cx="60" cy="60" r="54" />
+                    </svg>
+                    <div class="ring__value">17</div>
+                </div>
+                <div class="skill-name">Docker</div>
+            </div>
+
+            <div class="card">
+                <div class="ring ring--mid" style="--percent: 57">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="ring__track" cx="60" cy="60" r="54" />
+                        <circle class="ring__progress" cx="60" cy="60" r="54" />
+                    </svg>
+                    <div class="ring__value">57</div>
+                </div>
+                <div class="skill-name">TypeScript</div>
+            </div>
+        </div>
+    </body>
+</html>
